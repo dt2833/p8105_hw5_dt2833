@@ -7,7 +7,7 @@
       )
     
     t_test_df = 
-      t.test(sim_df, mu = mu) |> 
+      t.test(sim_df, mu = 0) |> 
       broom::tidy() |> 
       select(estimate, p.value) |>
       mutate (reject_H0 = p.value < 0.05)
