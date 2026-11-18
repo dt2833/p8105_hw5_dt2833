@@ -1,0 +1,64 @@
+---
+title: "p8105_hw5_dt2833"
+author: "Dominique Tzou"
+date: "2026-11-17"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+
+
+
+```{r}
+library(tidyverse)
+source("source/birthday_repeated.R")
+
+set.seed(1236)
+```
+
+## Problem 01 Birthday Problem
+
+Birthday function 
+
+```{r}
+birthday_results_df =
+  expand_grid(
+    number_of_people = 2:50,
+    iter = 1:10000
+  ) |> 
+  mutate(
+    repeated = map_lgl(number_of_people, birthday_repeated)
+  )
+```
+
+
+Plotting the probability as a function of group size
+```{r}
+birthday_results_df |> 
+  group_by(number_of_people) |> 
+  summarize(prob_of_repeat = mean(repeated)) |> 
+  ggplot(aes(x = number_of_people, y = prob_of_repeat)) + 
+  geom_point() + 
+  geom_line()
+```
+
+At around 23 people, there is at least a 50% chance that at least two people have the same birthtday. At 50 people, it is at least 90% chance. 
