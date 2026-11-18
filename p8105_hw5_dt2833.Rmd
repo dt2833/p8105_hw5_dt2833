@@ -116,3 +116,65 @@ tidy_df |>
 For subjects among the control arm, outcome remains within a relatively similar range across time. There is no significant overall increase or decrease in outcome over time. 
 
 For subjects among the experiental arm, outcome overall increases over time. Comparing starting and ending outcome of subjects, overall outcome increases at the end of the study.  
+
+## Problem 03
+
+
+```{r}
+
+  
+    
+    
+
+
+```
+
+```{r}
+source("source/t_test.R")
+
+sim_results_df = 
+  expand_grid(
+    mu = 0:6, 
+    iter = 1:5000
+  ) |> 
+  mutate(
+    est_df = map(mu, t_test)
+  ) |> 
+  unnest(est_df)
+
+```
+
+Plots 
+```{r}
+
+sim_results_df |> 
+group_by(mu) |> 
+  summarize(prob_of_rejectH0 = mean(reject_H0)) |> 
+  ggplot(aes(x = mu, y = prob_of_rejectH0)) + 
+  geom_point() + 
+  geom_line()
+
+sim_results_df |> 
+ group_by(mu) |> 
+  summarize(mean_estimate = mean(estimate)) |> 
+  ggplot(aes(x = mu, y = mean_estimate)) + 
+  geom_point() + 
+  geom_line() 
+
+
+sim_results_df |> 
+ group_by(mu, reject_H0) |> 
+  summarize(mean_estimate = mean(estimate)) |> 
+  ggplot(aes(x = mu, y = mean_estimate, group =reject_H0, color= reject_H0)) + 
+  geom_point() + 
+  geom_line() 
+
+sim_results_df |> 
+  filter(reject_H0 == TRUE )|>
+ group_by(mu, reject_H0) |> 
+  summarize(mean_estimate = mean(estimate)) |> 
+  ggplot(aes(x = mu, y = mean_estimate)) + 
+  geom_point() + 
+  geom_line() 
+```
+
