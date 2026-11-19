@@ -146,35 +146,37 @@ sim_results_df =
 
 Plots 
 ```{r}
-
+#the average estimate of mu and true value of mu
 sim_results_df |> 
 group_by(mu) |> 
-  summarize(prob_of_rejectH0 = mean(reject_H0)) |> 
+ summarize(prob_of_rejectH0 = mean(reject_H0)) |> 
   ggplot(aes(x = mu, y = prob_of_rejectH0)) + 
   geom_point() + 
-  geom_line()
+  geom_line()+
+   labs( title = "the proportion of times the null was rejected and true value of mu")
 
+
+#dataset of the average estimate of 𝜇 for all samples
+mean_estimate_df = 
 sim_results_df |> 
  group_by(mu) |> 
-  summarize(mean_estimate = mean(estimate)) |> 
-  ggplot(aes(x = mu, y = mean_estimate)) + 
-  geom_point() + 
-  geom_line() 
+  summarize(mean_estimate_mu = mean(estimate)) 
 
-
-sim_results_df |> 
- group_by(mu, reject_H0) |> 
-  summarize(mean_estimate = mean(estimate)) |> 
-  ggplot(aes(x = mu, y = mean_estimate, group =reject_H0, color= reject_H0)) + 
-  geom_point() + 
-  geom_line() 
-
+#dataset of the average estimate of 𝜇 for only in samples for which the null was rejected
+reject_H0_df = 
 sim_results_df |> 
   filter(reject_H0 == TRUE )|>
- group_by(mu, reject_H0) |> 
-  summarize(mean_estimate = mean(estimate)) |> 
-  ggplot(aes(x = mu, y = mean_estimate)) + 
-  geom_point() + 
-  geom_line() 
+ group_by(mu,reject_H0) |> 
+  summarize(mean_estimate_mu = mean(estimate)) 
+
+#the average estimate of mu and true value of mu
+ggplot() + 
+  geom_point(data = mean_estimate_df, aes(x = mu, y = mean_estimate_mu, color= "All Samples")) + 
+  geom_line(data = mean_estimate_df, aes(x = mu, y = mean_estimate_mu, color= "All Samples")) + 
+  geom_point(data = reject_H0_df, aes(x = mu, y = mean_estimate_mu,color= reject_H0)) + 
+  geom_line(data = reject_H0_df, aes(x = mu, y = mean_estimate_mu,color= reject_H0)) + 
+  labs( title = "the average estimate of mu and true value of mu")
+  
+
 ```
 
