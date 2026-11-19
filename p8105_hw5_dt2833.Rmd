@@ -66,13 +66,6 @@ At around 23 people, there is at least a 50% chance that at least two people hav
 
 ## Problem 02
 
-Create a tidy dataframe containing data from all participants, including the subject ID, arm, and observations over time:
-
-Start with a dataframe containing all file names; the list.files function will help
-Iterate over file names and read in data for each subject using purrr::map and saving the result as a new variable in the dataframe
-Tidy the result; manipulate file names to include control arm and subject ID, make sure weekly observations are “tidy”, and do any other tidying that’s necessary
-Make a spaghetti plot showing observations on each subject over time, and comment on differences between groups.
-
 
 Creating dataset
 ```{r}
@@ -151,6 +144,7 @@ group_by(mu) |>
 As effect size increases ( greater mu) and power increases as well. 
 
 
+
 __the average estimate of mu and true value of mu__
 ```{r}
 
@@ -167,32 +161,19 @@ sim_results_df |>
  group_by(mu,reject_H0) |> 
   summarize(mean_estimate_mu = mean(estimate)) 
 
-failreject_H0_df = 
-sim_results_df |> 
-  filter(reject_H0 == FALSE )|>
- group_by(mu,reject_H0) |> 
-  summarize(mean_estimate_mu = mean(estimate)) 
-
 #plot
 ggplot() + 
   geom_point(data = mean_estimate_df, aes(x = mu, y = mean_estimate_mu, color= "All Samples"))+
   geom_line(data = mean_estimate_df, aes(x = mu, y = mean_estimate_mu, color= "All Samples")) +
   geom_point(data = reject_H0_df, aes(x = mu, y = mean_estimate_mu,color= reject_H0)) + 
-  geom_line(data = reject_H0_df, aes(x = mu, y = mean_estimate_mu,color= reject_H0)) + 
-  geom_point(data = failreject_H0_df, aes(x = mu, y = mean_estimate_mu,color= reject_H0)) + 
-  geom_line(data = failreject_H0_df, aes(x = mu, y = mean_estimate_mu,color= reject_H0))+
+  geom_line(data = reject_H0_df, aes(x = mu, y = mean_estimate_mu,color= reject_H0)) +
   labs( title = "the average estimate of mu and true value of mu", 
         x = "true value of mu ")
-
-
-sim_results_df |> 
-  filter(reject_H0 == TRUE )|> 
-  count(mu)
   
 ```
 The sample average of 𝜇̂ across tests for which the null is rejected is not approximately equal to the true value of 𝜇, for all 𝜇. 
 
-With less effect size (smaller true values of mu) and less power, mean estimates of mu are further away from (greater than) the true value, and a true effect is less easily identified ( more extreme values are needed to reject H0)
+Among samples for which the null was rejected, with less effect size (smaller true values of 𝜇) and less power, mean estimates of 𝜇^ are further away from (greater than) the true value, and a true effect is less easily identified ( more extreme values are needed to reject H0). 
 
-As mu increases and effect size increases and thus power increases, a true effect is more easily identified and mean estimates of mu are close to the true mu. A greater proportion samples are being rejected. 
+Among samples for which the null was rejected, as 𝜇 increases and effect size increases and thus power increases, a true effect is more easily identified and mean estimates of 𝜇^ are close to the true 𝜇. A greater proportion samples are being rejected. 
 
