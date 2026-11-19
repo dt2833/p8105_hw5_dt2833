@@ -115,23 +115,13 @@ tidy_df |>
 
 For subjects among the control arm, outcome remains within a relatively similar range across time. There is no significant overall increase or decrease in outcome over time. 
 
-For subjects among the experiental arm, outcome overall increases over time. Comparing starting and ending outcome of subjects, overall outcome increases at the end of the study.  
+For subjects among the experiental arm, outcome overall increases over time. Comparing starting and ending outcome of subjects, overall outcome increases by the end of the study.  
 
 ## Problem 03
 
-
-```{r}
-
-  
-    
-    
-
-
-```
-
 ```{r}
 source("source/t_test.R")
-
+#simulation dataset and ttest results
 sim_results_df = 
   expand_grid(
     mu = 0:6, 
@@ -144,17 +134,25 @@ sim_results_df =
 
 ```
 
-Plots 
+### Plots 
+
+__The proportion of times the null was rejected and true value of mu__
 ```{r}
-#the average estimate of mu and true value of mu
+#the proportion of times the null was rejected and true value of mu
 sim_results_df |> 
 group_by(mu) |> 
- summarize(prob_of_rejectH0 = mean(reject_H0)) |> 
-  ggplot(aes(x = mu, y = prob_of_rejectH0)) + 
+ summarize(prop_of_rejectH0 = mean(reject_H0)) |> 
+  ggplot(aes(x = mu, y = prop_of_rejectH0)) + 
   geom_point() + 
   geom_line()+
    labs( title = "the proportion of times the null was rejected and true value of mu")
 
+```
+As effect size increases ( greater mu) and power increases as well. 
+
+
+__the average estimate of mu and true value of mu__
+```{r}
 
 #dataset of the average estimate of 𝜇 for all samples
 mean_estimate_df = 
@@ -169,14 +167,32 @@ sim_results_df |>
  group_by(mu,reject_H0) |> 
   summarize(mean_estimate_mu = mean(estimate)) 
 
-#the average estimate of mu and true value of mu
+failreject_H0_df = 
+sim_results_df |> 
+  filter(reject_H0 == FALSE )|>
+ group_by(mu,reject_H0) |> 
+  summarize(mean_estimate_mu = mean(estimate)) 
+
+#plot
 ggplot() + 
-  geom_point(data = mean_estimate_df, aes(x = mu, y = mean_estimate_mu, color= "All Samples")) + 
-  geom_line(data = mean_estimate_df, aes(x = mu, y = mean_estimate_mu, color= "All Samples")) + 
+  geom_point(data = mean_estimate_df, aes(x = mu, y = mean_estimate_mu, color= "All Samples"))+
+  geom_line(data = mean_estimate_df, aes(x = mu, y = mean_estimate_mu, color= "All Samples")) +
   geom_point(data = reject_H0_df, aes(x = mu, y = mean_estimate_mu,color= reject_H0)) + 
   geom_line(data = reject_H0_df, aes(x = mu, y = mean_estimate_mu,color= reject_H0)) + 
-  labs( title = "the average estimate of mu and true value of mu")
-  
+  geom_point(data = failreject_H0_df, aes(x = mu, y = mean_estimate_mu,color= reject_H0)) + 
+  geom_line(data = failreject_H0_df, aes(x = mu, y = mean_estimate_mu,color= reject_H0))+
+  labs( title = "the average estimate of mu and true value of mu", 
+        x = "true value of mu ")
 
+
+sim_results_df |> 
+  filter(reject_H0 == TRUE )|> 
+  count(mu)
+  
 ```
+The sample average of 𝜇̂ across tests for which the null is rejected is not approximately equal to the true value of 𝜇, for all 𝜇. 
+
+With less effect size (smaller true values of mu) and less power, mean estimates of mu are further away from (greater than) the true value, and a true effect is less easily identified ( more extreme values are needed to reject H0)
+
+As mu increases and effect size increases and thus power increases, a true effect is more easily identified and mean estimates of mu are close to the true mu. A greater proportion samples are being rejected. 
 
